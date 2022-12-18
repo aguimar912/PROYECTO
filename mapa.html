@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?v3"
+    ></script>
+
+  </head>
+  <body>
+    <div id="mapa" style="width: 700px; height: 500px"></div>
+    <script type="text/javascript">
+      var divMapa = document.getElementById("mapa");
+      navigator.geolocation.getCurrentPosition(fn_ok, fn_mal);
+      function fn_mal() {}
+      function fn_ok(rta) {
+        var lat = rta.coords.latitude;
+        var lon = rta.coords.longitude;
+
+        var gLatLon = new google.maps.LatLng(lat, lon);
+        var objConfig = {
+          zoom: 17,
+          center: gLatLon,
+        };
+        var gMapa = new google.maps.Map(divMapa, objConfig);
+''
+        var objConfigMarker = {
+          position: gLatLon,
+          animation: google.maps.Animation.DROP,
+          draggable: true,
+          map: gMapa,
+          title: "Usted está aquí",
+        }
+        var gMarker = new google.maps.Marker(objConfigMarker);
+      
+
+      var gCoder = new google.maps.Geocoder();
+
+
+      var objInformacion = {
+      address: "Av. de Hytasa, 57, 41006 Sevilla"
+        //position: {lat: 37.37107271165397, lng: -5.96006437282352}
+      }
+      gCoder.geocode(objInformacion, fn_coder);
+      function fn_coder(datos) {
+        var coordenadas = datos[0].geometry.location;
+        var config = {
+          map: gMapa,
+          animation: google.maps.Animation.DROP,
+          position: coordenadas,
+          tittle: "CensoredShop",
+        };
+        var gMarkerDV = new google.maps.Marker(config)
+        gMarkerDV.setIcon("imagenesProductos/1.png")
+
+        var objHTML = {
+          content:
+            '<div style="height: 150px; width: 300px;><h2>Tienda erótica></h2><h3>Ven a visitarnos</h3></div>'
+        }
+        var gIW = new google.maps.InfoWindow(objHTML)
+
+        google.maps.event.addListener(gMarkerDV, "click", function () {
+          gIW.open(gMapa, gMarkerDV);
+        });
+      }
+      var objConfigDR = {
+          map: gMapa,
+          suppressMarkers: true
+      }
+      var objConfigDS = {
+          origin:gLatLon,
+          destination: 'hytasa' ,
+          travelMode: google.maps.TravelMode.DRIVING
+      }
+var ds = new google.maps.DirectionsService();
+var dr = new google.maps.DirectionsRender(objConfigDR);
+ ds.route(objConfigDS, fnRutear);
+ function fnRutear(resultados, status){
+     if(status == 'OK'){
+         dr.setDirections(resultados);
+     }else{
+         alert('ERROR');
+     }
+ }
+    }
+    </script>
+  </body>
+</html>
